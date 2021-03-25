@@ -159,8 +159,8 @@ namespace tarikumutlu
             int n2 = n123y * width + n27x;  // orta ust
             int n1 = n123y * width + n146x; // sol ust
             int n7 = n678y * width + n27x;  // orta alt
-            int n3 = n123y * width + n358x; // sag ust
             int n5 = n45y * width + n358x;  // orta sag
+            int n3 = n123y * width + n358x; // sag ust
             int n8 = n678y * width + n358x; // sag alt
             int n6 = n678y * width + n146x; // sol alt
             // std::cout << " key: " << key << std::endl;
@@ -185,6 +185,12 @@ namespace tarikumutlu
                 zoneLastBorder = false;
                 LookNeighbour(n27x, n678y, width,height, borderMap);
             }
+            if (borderMap.find(n5) != borderMap.end() && borderMap[n5] == 0 && n358x < width)
+            {
+                //std::cout << "var" << n5 << std::endl;
+                zoneLastBorder = false;
+                LookNeighbour(n358x, n45y, width,height, borderMap);
+            }
             if (borderMap.find(n3) != borderMap.end() && borderMap[n3] == 0 && n358x < width && n123y >= 0)
             {
                 zoneLastBorder = false;
@@ -192,12 +198,6 @@ namespace tarikumutlu
             }
             // std::cout << "key n5 var mi: " << (borderMap.find(n5) != borderMap.end()) << std::endl;
             // std::cout << " valuesi: " << borderMap[n5] << std::endl;
-            if (borderMap.find(n5) != borderMap.end() && borderMap[n5] == 0 && n358x < width)
-            {
-                //std::cout << "var" << n5 << std::endl;
-                zoneLastBorder = false;
-                LookNeighbour(n358x, n45y, width,height, borderMap);
-            }
             if (borderMap.find(n8) != borderMap.end() && borderMap[n8] == 0 && n678y < height && n358x < width)
             {
                 zoneLastBorder = false;

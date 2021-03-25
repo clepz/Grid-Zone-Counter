@@ -37,30 +37,36 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(1090, 900, 111, 31))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.saveMap)
-        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(10, 910, 51, 21))
-        self.lineEdit.setObjectName("lineEdit")
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(80, 910, 51, 21))
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(10, 890, 57, 15))
-        self.label.setObjectName("label")
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(80, 890, 57, 15))
-        self.label_2.setObjectName("label_2")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(1090, 950, 111, 31))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.loadMap)
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(10, 940, 111, 31))
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.pushButton_3.clicked.connect(self.newMap)
+        self.saveMapButton = QtWidgets.QPushButton(self.centralwidget)
+        self.saveMapButton.setGeometry(QtCore.QRect(1090, 900, 111, 31))
+        self.saveMapButton.setObjectName("pushButton")
+        self.saveMapButton.clicked.connect(self.saveMap)
+        self.widthEditText = QtWidgets.QLineEdit(self.centralwidget)
+        self.widthEditText.setGeometry(QtCore.QRect(10, 910, 51, 21))
+        self.widthEditText.setObjectName("lineEdit")
+        self.heightEditText = QtWidgets.QLineEdit(self.centralwidget)
+        self.heightEditText.setGeometry(QtCore.QRect(80, 910, 51, 21))
+        self.heightEditText.setObjectName("lineEdit_2")
+        self.saveFileNameEditText = QtWidgets.QLineEdit(self.centralwidget)
+        self.saveFileNameEditText.setGeometry(QtCore.QRect(950, 900, 121, 31))
+        self.saveFileNameEditText.setObjectName("lineEdit_3")
+        self.loadFileNameEditText = QtWidgets.QLineEdit(self.centralwidget)
+        self.loadFileNameEditText.setGeometry(QtCore.QRect(950, 950, 121, 31))
+        self.loadFileNameEditText.setObjectName("lineEdit_4")
+        self.widthLabel = QtWidgets.QLabel(self.centralwidget)
+        self.widthLabel.setGeometry(QtCore.QRect(10, 890, 57, 15))
+        self.widthLabel.setObjectName("label")
+        self.heightLabel = QtWidgets.QLabel(self.centralwidget)
+        self.heightLabel.setGeometry(QtCore.QRect(80, 890, 57, 15))
+        self.heightLabel.setObjectName("label_2")
+        self.loadMapButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loadMapButton.setGeometry(QtCore.QRect(1090, 950, 111, 31))
+        self.loadMapButton.setObjectName("pushButton_2")
+        self.loadMapButton.clicked.connect(self.loadMap)
+        self.newMapButton = QtWidgets.QPushButton(self.centralwidget)
+        self.newMapButton.setGeometry(QtCore.QRect(10, 940, 111, 31))
+        self.newMapButton.setObjectName("pushButton_3")
+        self.newMapButton.clicked.connect(self.newMap)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1211, 20))
@@ -79,17 +85,17 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "Save Map"))
-        self.label.setText(_translate("MainWindow", "width"))
-        self.label_2.setText(_translate("MainWindow", "height"))
-        self.pushButton_2.setText(_translate("MainWindow", "Load Map"))
-        self.pushButton_3.setText(_translate("MainWindow", "New Map"))
+        self.saveMapButton.setText(_translate("MainWindow", "Save Map"))
+        self.widthLabel.setText(_translate("MainWindow", "width"))
+        self.heightLabel.setText(_translate("MainWindow", "height"))
+        self.loadMapButton.setText(_translate("MainWindow", "Load Map"))
+        self.newMapButton.setText(_translate("MainWindow", "New Map"))
 
     def newMap(self):
         for i in reversed(range(self.gridLayout.count())): 
             self.gridLayout.itemAt(i).widget().setParent(None)
-        self.width = int(self.lineEdit.text()) + 1 
-        self.height = int(self.lineEdit_2.text()) + 1
+        self.width = int(self.widthEditText.text()) + 1 
+        self.height = int(self.heightEditText.text()) + 1
         self.cellList = []
         for i in range(self.height):
             for y in range(self.width):
@@ -123,17 +129,19 @@ class Ui_MainWindow(object):
 
     def saveMap(self):
         string = ""
+        filename = self.saveFileNameEditText.text() if self.saveFileNameEditText.text() != "" else "map.txt"
         for i in range(self.height):
             for y in range(self.width):
                 cell = self.cellList[i*self.width + y]
                 string += str(cell.value) + ","
-        with open("map.txt","w") as f:
+        with open(filename,"w") as f:
             f.write("{},{}\n".format(self.width,self.height))
             f.write(string[:-1])
 
     def loadMap(self):
         values = None
-        with open("map.txt","r") as f:
+        filename = self.loadFileNameEditText.text() if self.loadFileNameEditText.text() != "" else "map.txt"
+        with open(filename,"r") as f:
             line = f.readline()
             array = line.split(",")
             self.width = int(array[0])
