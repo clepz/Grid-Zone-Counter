@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <sstream>
+#include <unordered_map>
 
 #define LOG(...)\
 Logger(__VA_ARGS__);
@@ -39,4 +40,9 @@ inline std::string parseArgs(int argc, char const *argv[])
         }
     }
     return "../maps/map.txt";
+}
+
+inline std::pair<int, int> getPointFromMap(const std::unordered_map<int,int>& map, int width){
+        int keyFromMap = map.begin()->first;
+        return std::make_pair(keyFromMap % width, keyFromMap / width);
 }

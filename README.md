@@ -58,6 +58,7 @@ Result is:
 
 
 ## Python GUI
+
 ![](images/python_gui.png)
 
 Python GUI is developed for test purposes and also It provides map visuality, map creation speed, variety.
@@ -69,5 +70,9 @@ Python GUI is developed for test purposes and also It provides map visuality, ma
 ### Run
 `python map_creator.py`
 
+
+## TEST Video
+
+Open video/bites_vid.mp4
 
 

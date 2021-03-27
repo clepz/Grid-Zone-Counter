@@ -13,6 +13,8 @@ namespace tarikumutlu
         int m_height;
         int m_width;
         int **m_map;
+        int m_actualWidth;
+        int m_actualHeight;
 
     private:
         void CreateMap();
@@ -63,15 +65,6 @@ namespace tarikumutlu
          * @param borderMap 
          */
         void LookNeighbour(int x, int y, int width, int height, std::unordered_map<int, int> &borderMap);
-
-        /**
-         * @brief Find top left border point from borderMap
-         * 
-         * @param borderMap 
-         * @param width map width. It is necessary to find x,y because borderMap keys are index value.
-         * @return std::pair<int,int> first is x, the second is y
-         */
-        std::pair<int, int> FindTopLeftBorder(std::unordered_map<int, int> &borderMap, int width);
 
         int m_zoneCount;
 

@@ -87,16 +87,13 @@ class Ui_MainWindow(object):
     def newMap(self):
         for i in reversed(range(self.gridLayout.count())): 
             self.gridLayout.itemAt(i).widget().setParent(None)
-        self.width = int(self.widthEditText.text()) + 2 
-        self.height = int(self.heightEditText.text()) + 2
+        self.width = int(self.widthEditText.text())
+        self.height = int(self.heightEditText.text())
         self.cellList = []
         for i in range(self.height):
             for y in range(self.width):
                 cellWidget = None
-                if i == 0 or i == self.height -1 or y == 0 or y == self.width -1:
-                    cellWidget = CellWidget(-1)
-                else:
-                    cellWidget = CellWidget(0)
+                cellWidget = CellWidget(0)
                 cellWidget.setAttribute(QtCore.Qt.WA_StyledBackground, True)
                 cellWidget.autoFillBackground = True
                 cellWidget.setGeometry(QtCore.QRect(720, 20, 80, 80))
