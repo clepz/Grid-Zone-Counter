@@ -1,6 +1,9 @@
 #include "zonecount_impl.hpp"
 #include <fstream>
 
+#define CHECK_KEY_IS_BORDER(key) \
+key <=0 || key / width == 0 || key % width == 0 || key % width == width-1 || key % (height*(width-1))<width ? true:false;
+
 namespace tarikumutlu
 {
     //---MapImpl---
@@ -174,14 +177,15 @@ namespace tarikumutlu
 
     void ZoneCounterImpl::LookNeighbour(int x, int y, int width, int height, std::unordered_map<int, int> &borderMap)
     {
+        static bool first = true;
         bool zoneLastBorder = true;
         int key = y * width + x;
         if (borderMap.find(key) == borderMap.end())
             return;
         else if (borderMap[key] == 0)
         {
-            //bool isKeyBorder = key / width == 0 || key % width == 0 ||
-            //                    key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            
+            bool isKeyBorder = CHECK_KEY_IS_BORDER(key);
             borderMap.erase(key);
             int n146x = x - 1; // < 0 ? 0 : x - 1;
             int n27x = x;
@@ -198,64 +202,73 @@ namespace tarikumutlu
             int n3 = n123y * width + n358x; // sag ust
             int n8 = n678y * width + n358x; // sag alt
             int n6 = n678y * width + n146x; // sol alt
-            // bool n1IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n2IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n3IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n4IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n5IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n6IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n7IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            // bool n8IsBorder = key / width == 0 || key % width == 0 ||
-            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
-            if (borderMap.find(n4) != borderMap.end() && borderMap[n4] == 0 && n146x >= 0 /*&& ((isKeyBorder && !n4IsBorder) || (!isKeyBorder && !n4IsBorder))*/)
+            
+            int nBorderCount = 0;
+            bool n1IsBorder = CHECK_KEY_IS_BORDER(n1);
+            if(n1IsBorder && !isKeyBorder) nBorderCount++;
+            bool n2IsBorder = CHECK_KEY_IS_BORDER(n2);
+            if(n2IsBorder && !isKeyBorder) nBorderCount++;
+            bool n3IsBorder = CHECK_KEY_IS_BORDER(n3);
+            if(n3IsBorder && !isKeyBorder) nBorderCount++;
+            bool n4IsBorder = CHECK_KEY_IS_BORDER(n4);
+            if(n4IsBorder && !isKeyBorder) nBorderCount++;
+            bool n5IsBorder = CHECK_KEY_IS_BORDER(n5);
+            if(n5IsBorder && !isKeyBorder) nBorderCount++;
+            bool n6IsBorder = CHECK_KEY_IS_BORDER(n6);
+            if(n6IsBorder && !isKeyBorder) nBorderCount++;
+            bool n7IsBorder = CHECK_KEY_IS_BORDER(n7);
+            if(n7IsBorder && !isKeyBorder) nBorderCount++;
+            bool n8IsBorder = CHECK_KEY_IS_BORDER(n8);
+            if(n8IsBorder && !isKeyBorder) nBorderCount++;
+
+            if(isKeyBorder && !first)
+                first = true;
+            if(!isKeyBorder)
+                first = false;
+
+            if (borderMap.find(n4) != borderMap.end() && borderMap[n4] == 0 && n146x >= 0 && !(!isKeyBorder && n4IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n146x, n45y, width, height, borderMap);
             }
-            if (borderMap.find(n2) != borderMap.end() && borderMap[n2] == 0 && n123y >= 0)
+            if (borderMap.find(n2) != borderMap.end() && borderMap[n2] == 0 && n123y >= 0&& !(!isKeyBorder && n2IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n27x, n123y, width, height, borderMap);
             }
-            if (borderMap.find(n1) != borderMap.end() && borderMap[n1] == 0 && n146x >= 0 && n123y >= 0)
+            if (borderMap.find(n1) != borderMap.end() && borderMap[n1] == 0 && n146x >= 0 && n123y >= 0&& !(!isKeyBorder && n1IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n146x, n123y, width, height, borderMap);
             }
-            if (borderMap.find(n7) != borderMap.end() && borderMap[n7] == 0 && n678y < height)
+            if (borderMap.find(n7) != borderMap.end() && borderMap[n7] == 0 && n678y < height&& !(!isKeyBorder && n7IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n27x, n678y, width, height, borderMap);
             }
-            if (borderMap.find(n5) != borderMap.end() && borderMap[n5] == 0 && n358x < width)
+            if (borderMap.find(n5) != borderMap.end() && borderMap[n5] == 0 && n358x < width&& !(!isKeyBorder && n5IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n358x, n45y, width, height, borderMap);
             }
-            if (borderMap.find(n3) != borderMap.end() && borderMap[n3] == 0 && n358x < width && n123y >= 0)
+            if (borderMap.find(n3) != borderMap.end() && borderMap[n3] == 0 && n358x < width && n123y >= 0&& !(!isKeyBorder && n3IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n358x, n123y, width, height, borderMap);
             }
-            if (borderMap.find(n8) != borderMap.end() && borderMap[n8] == 0 && n678y < height && n358x < width)
+            if (borderMap.find(n8) != borderMap.end() && borderMap[n8] == 0 && n678y < height && n358x < width&& !(!isKeyBorder && n8IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n358x, n678y, width, height, borderMap);
             }
-            if (borderMap.find(n6) != borderMap.end() && borderMap[n6] == 0 && n678y < height && n146x >= 0)
+            if (borderMap.find(n6) != borderMap.end() && borderMap[n6] == 0 && n678y < height && n146x >= 0&& !(!isKeyBorder && n6IsBorder))
             {
                 zoneLastBorder = false;
                 LookNeighbour(n146x, n678y, width, height, borderMap);
             }
-            if (zoneLastBorder)
-                m_zoneCount += 1;
+            if ((zoneLastBorder || (nBorderCount>=3 && nBorderCount<=5)) && !first)
+                {m_zoneCount += 1;}
+            
         }
     }
 

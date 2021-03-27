@@ -27,12 +27,13 @@ int main(int argc, char const *argv[])
     ZoneCounterInterface* zc = getZoneCounter();
     zc->Init(&map);
     int result = zc->Solve();
-    LOG("Zone Count is : ", result)
+    LOG("Zone Count is : ", result, "\n")
     //-------
 
     //Create a map with functions and count zones.
     MapImpl map2;
     createMap(map2);
+    LOG("Code created map:");
     map2.Show();
     zc->Init(&map2);
     int result2 = zc->Solve();
