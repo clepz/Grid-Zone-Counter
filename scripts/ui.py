@@ -43,9 +43,11 @@ class Ui_MainWindow(object):
         self.saveFileNameEditText = QtWidgets.QLineEdit(self.centralwidget)
         self.saveFileNameEditText.setGeometry(QtCore.QRect(950, 900, 121, 31))
         self.saveFileNameEditText.setObjectName("lineEdit_3")
+        self.saveFileNameEditText.setText("map.txt")
         self.loadFileNameEditText = QtWidgets.QLineEdit(self.centralwidget)
         self.loadFileNameEditText.setGeometry(QtCore.QRect(950, 950, 121, 31))
         self.loadFileNameEditText.setObjectName("lineEdit_4")
+        self.loadFileNameEditText.setText("map.txt")
         self.widthLabel = QtWidgets.QLabel(self.centralwidget)
         self.widthLabel.setGeometry(QtCore.QRect(10, 890, 57, 15))
         self.widthLabel.setObjectName("label")
@@ -118,9 +120,11 @@ class Ui_MainWindow(object):
         self.gridLayout.setVerticalSpacing(5)
 
     def saveMap(self):
-        path = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.dirname(os.path.abspath(__file__)) + "/../maps/"
         string = ""
-        filename = self.saveFileNameEditText.text() if self.saveFileNameEditText.text() != "" else path + "/../maps/map.txt"
+        filename = self.saveFileNameEditText.text() if self.saveFileNameEditText.text() != "" else path + "map.txt"
+        if (filename[0] != "/"):
+            filename = path + filename
         for i in range(self.height):
             for y in range(self.width):
                 cell = self.cellList[i*self.width + y]
@@ -130,8 +134,11 @@ class Ui_MainWindow(object):
             f.write(string[:-1])
 
     def loadMap(self):
+        path = os.path.dirname(os.path.abspath(__file__)) + "/../maps/"
         values = None
-        filename = self.loadFileNameEditText.text() if self.loadFileNameEditText.text() != "" else "map.txt"
+        filename = self.loadFileNameEditText.text() if self.loadFileNameEditText.text() != "" else path + "map.txt"
+        if (filename[0] != "/"):
+            filename = path + filename
         with open(filename,"r") as f:
             line = f.readline()
             array = line.split(",")

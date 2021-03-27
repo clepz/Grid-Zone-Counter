@@ -40,8 +40,7 @@ cd ../bin
 	- change codes inside `createMap` function in `main.cpp`
 	
 ### ****NOTE**
-For better understanding of algorithm that counts zones, usage of `SetSize` function adds edges to the map. 
-For example, create a map inside `createMap` function in main.cpp:
+Create a map inside `createMap` function in main.cpp:
 ```c++
 map.SetSize(5,5);
 map.SetBorder(3,1);
@@ -54,8 +53,15 @@ Result is:
 
 ![](images/map5x5.png)
 
-`GetSize` function returns width and height with edges counts because of that. This situation is for debug and test purposes.
+x,y index starts 1,1
 
+## Solve Algorithm
+
+- Once a map is created, create function adds border edges for all side. Like the picture below, in python gui section.
+- Solve function initialize a zonePointMap which has all nonborder points. 
+- Solve function calls LookNeighbor function witth a zonePoint
+- LookNeighbor searches all neighbor cells recursively until remain no neighbor zone points in the map.
+- ZoneCounter variable is increased after LookNeighbor returned true
 
 ## Python GUI
 
@@ -74,5 +80,13 @@ Python GUI is developed for test purposes and also It provides map visuality, ma
 ## TEST Video
 
 Open video/bites_vid.mp4
+
+## Known Bugs
+--
+
+## Improvements Can Be Made
+
+- MapImpl class creates border edges and stores them. This process needs to be in ZoneCounterImpl class.
+
 
 

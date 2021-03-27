@@ -37,8 +37,8 @@ namespace tarikumutlu
         int const *const *GetMap() const;
         /**
         * @brief Load map from a txt file. Txt file format:
-        * first line is comma seperated width and height (width value with edges)
-        * second line is comma seperated value for each cell. (height value with edges)
+        * first line is comma seperated width and height.
+        * second line is comma seperated value for each zone points as index.
         * 
         * @param filepath 
         * @return true file is found
@@ -55,16 +55,19 @@ namespace tarikumutlu
         MapInterface *m_map;
 
         /**
-         * @brief It follows a border at (x,y) until zone is completed. Then follows border which is not followed before.
-         * x,y point must be not followed before and must be top left point.
+         * @brief It follows a point at (x,y) until zone is completed.
+         * x,y point must be not followed before and can be anypoint in anywhere.
          * 
          * @param x A start point x
          * @param y A start point y
          * @param width Map width
          * @param height Map height
-         * @param borderMap 
+         * @param borderMap unordered map which has all zone points, not border points.
+         * 
+         * @return true: if one zone is found.
+         * @return false: if given point is a border point
          */
-        void LookNeighbour(int x, int y, int width, int height, std::unordered_map<int, int> &borderMap);
+        bool LookNeighbor(int x, int y, int width, int height, std::unordered_map<int, int> &zonePointMap);
 
         int m_zoneCount;
 

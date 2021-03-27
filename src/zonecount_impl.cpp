@@ -147,10 +147,11 @@ namespace tarikumutlu
     {
         int width;
         int height;
-        m_map->GetSize(width, height);
+        m_map->GetSize(width, height); // Need to get actual size.
+        //TODO: border edges add process and storing need to be in this class.
         LOG("width: ", width);
         LOG("height : ", height)
-        width += 2;
+        width += 2; // because actual size is +2.
         height += 2;
         std::unordered_map<int, int> zonePointMap;
         for (int y = 0; y < height; y++)
@@ -159,12 +160,11 @@ namespace tarikumutlu
             {
                 if (!m_map->IsBorder(x, y))
                 {
+                    //store points with index.
                     zonePointMap[y * (width) + x] = 0;
                 }
             }
         }
-
-        //LookNeighbour(0, 0, width, height, zonePointMap);
 
         // even if map has only one point, there is a zone. 
         while (zonePointMap.size() != 0)
@@ -175,24 +175,24 @@ namespace tarikumutlu
             int y = key.second;
             LOG("search start point: ", x, "-", y);
             //every return of this function is 
-            LookNeighbour(x, y, width, height, zonePointMap);
-            m_zoneCount++;
+            int res = LookNeighbor(x, y, width, height, zonePointMap);
+            if(res) m_zoneCount++;
         }
 
         return m_zoneCount;
     }
 
-    void ZoneCounterImpl::LookNeighbour(int x, int y, int width, int height, std::unordered_map<int, int> &zonePointMap)
+    bool ZoneCounterImpl::LookNeighbor(int x, int y, int width, int height, std::unordered_map<int, int> &zonePointMap)
     {
         int key = y * width + x;
         if (zonePointMap.find(key) == zonePointMap.end())
-            return;
+            return false;
         else if (zonePointMap[key] == 0)
         {
             // delete current zone point from the map.
             zonePointMap.erase(key);
             
-            // find neighbour zone point's key 
+            // find neighbor zone point's key 
             int n4x = x - 1; // < 0 ? 0 : x - 1;
             int n27x = x;
             int n5x = x + 1; // > 9 ? 9 : x + 1;
@@ -205,25 +205,25 @@ namespace tarikumutlu
             int n7 = n7y * width + n27x;  // orta alt
             int n5 = n45y * width + n5x;  // orta sag
             
-            // search all zone points that be neighbour. then return.
+            // search all zone points that are neighbor. then return.
             if (zonePointMap.find(n4) != zonePointMap.end())
             {
-                LookNeighbour(n4x, n45y, width, height, zonePointMap);
+                LookNeighbor(n4x, n45y, width, height, zonePointMap);
             }
             if (zonePointMap.find(n2) != zonePointMap.end())
             {
-                LookNeighbour(n27x, n2y, width, height, zonePointMap);
+                LookNeighbor(n27x, n2y, width, height, zonePointMap);
             }
             if (zonePointMap.find(n7) != zonePointMap.end())
             {
-                LookNeighbour(n27x, n7y, width, height, zonePointMap);
+                LookNeighbor(n27x, n7y, width, height, zonePointMap);
             }
             if (zonePointMap.find(n5) != zonePointMap.end())
             {
-                LookNeighbour(n5x, n45y, width, height, zonePointMap);
+                LookNeighbor(n5x, n45y, width, height, zonePointMap);
             }
-            
         }
+        return true;
     }
 
     ZoneCounterInterface *getZoneCounter()
