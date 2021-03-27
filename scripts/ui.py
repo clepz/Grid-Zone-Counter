@@ -1,12 +1,5 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'mapcreator.ui'
-#
-# Created by: PyQt5 UI code generator 5.9.2
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
 
 class CellWidget(QtWidgets.QWidget):
     def __init__(self, value):
@@ -94,8 +87,8 @@ class Ui_MainWindow(object):
     def newMap(self):
         for i in reversed(range(self.gridLayout.count())): 
             self.gridLayout.itemAt(i).widget().setParent(None)
-        self.width = int(self.widthEditText.text()) + 1 
-        self.height = int(self.heightEditText.text()) + 1
+        self.width = int(self.widthEditText.text()) + 2 
+        self.height = int(self.heightEditText.text()) + 2
         self.cellList = []
         for i in range(self.height):
             for y in range(self.width):
@@ -128,8 +121,9 @@ class Ui_MainWindow(object):
         self.gridLayout.setVerticalSpacing(5)
 
     def saveMap(self):
+        path = os.path.dirname(os.path.abspath(__file__))
         string = ""
-        filename = self.saveFileNameEditText.text() if self.saveFileNameEditText.text() != "" else "map.txt"
+        filename = self.saveFileNameEditText.text() if self.saveFileNameEditText.text() != "" else path + "/../maps/map.txt"
         for i in range(self.height):
             for y in range(self.width):
                 cell = self.cellList[i*self.width + y]

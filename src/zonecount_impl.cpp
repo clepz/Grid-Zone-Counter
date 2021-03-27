@@ -25,12 +25,24 @@ namespace tarikumutlu
         m_map = new int *[m_width] { 0 };
         for (int i = 0; i < m_width; i++)
             m_map[i] = new int[m_height]{0};
+
+        // add border for map edges.
+        for (int i = 0; i < m_width; i++)
+        {
+            SetBorder(i, 0);
+            SetBorder(m_width - i - 1, m_height - 1);
+        }
+        for( int i = 0 ; i < m_height ; i++) {
+            SetBorder(0, i);
+            SetBorder(m_width - 1 , m_height - i - 1);
+        }
     }
     // Creates a map of given size.
     void MapImpl::SetSize(const int width, const int height)
     {
-        m_height = height;
-        m_width = width;
+        // add the map edges as border for better understanding of the algorithm
+        m_height = height + 2;
+        m_width = width + 2;
         CreateMap();
     };
     // Returns size of map to solve.
@@ -42,7 +54,7 @@ namespace tarikumutlu
     // Sets border at given point.
     void MapImpl::SetBorder(const int x, const int y)
     {
-        m_map[x][y] = 1;
+        m_map[x][y] = -1;
     };
 
     // Clears border at given point.
@@ -61,9 +73,16 @@ namespace tarikumutlu
     {
         return m_map;
     }
-    void MapImpl::LoadMapFromFile(const std::string &filename)
+    bool MapImpl::LoadMapFromFile(const std::string &filename)
     {
         std::ifstream file(filename);
+        if (!file.is_open())
+        {
+            LOG("File is not exist")
+            return false;
+        }
+
+        //first line gives width and height
         std::string line;
         std::getline(file, line);
 
@@ -71,6 +90,7 @@ namespace tarikumutlu
         m_height = StringToInt(line.substr(line.find(',') + 1, line.length() - 1));
         CreateMap();
 
+        //second line is a value that corresponding x,y is border or not.
         std::getline(file, line);
         file.close();
 
@@ -84,9 +104,11 @@ namespace tarikumutlu
                 m_map[y][x] = StringToInt(tmp);
             }
         }
+        //Map reading is completed.
+        return true;
     }
 
-    // Show map contents.
+    // Show map contents as a map.
     void MapImpl::Show()
     {
         for (int y = 0; y < m_height; y++)
@@ -100,6 +122,7 @@ namespace tarikumutlu
         }
     };
 
+    // -------------------
     //---ZoneCounterImpl---
 
     ZoneCounterImpl::ZoneCounterImpl() : m_map(nullptr), m_zoneCount(0) {}
@@ -109,6 +132,7 @@ namespace tarikumutlu
     // Feeds map instance into solution class, and initialize.
     void ZoneCounterImpl::Init(MapInterface *map)
     {
+        m_zoneCount = 0;
         this->m_map = map;
     }
 
@@ -118,9 +142,8 @@ namespace tarikumutlu
         int width;
         int height;
         m_map->GetSize(width, height);
-        std::cout << std::endl
-                  << " width : " << width << std::endl;
-        std::cout << " height : " << height << std::endl;
+        LOG("width (with edges) : ", width);
+        LOG("height (with edges) : ", height)
         std::unordered_map<int, int> borderMap;
         for (int y = 0; y < height; y++)
         {
@@ -129,13 +152,23 @@ namespace tarikumutlu
                 if (m_map->IsBorder(x, y))
                 {
                     borderMap[y * width + x] = 0;
-                    //std::cout << (y * width + x) << ", ";
                 }
-                //std::cout << std::endl;
             }
         }
 
-        LookNeighbour(0, 0, width,height, borderMap);
+        //LookNeighbour(0, 0, width, height, borderMap);
+
+        while (borderMap.size() != 0)
+        {
+            // I made a choice not using an ordered list. unorder_map insert and find methods' BigO is 1.
+            // I think, insert and finds are being more accesing then findtopleftborder. This situation needs some tests.
+            auto key = FindTopLeftBorder(borderMap, width);
+            int x = key.first;
+            int y = key.second;
+            LOG("Finding top left border: ", x, "-", y);
+            LookNeighbour(x, y, width, height, borderMap);
+        }
+
         return m_zoneCount;
     }
 
@@ -147,7 +180,9 @@ namespace tarikumutlu
             return;
         else if (borderMap[key] == 0)
         {
-            borderMap[key] = 1;
+            //bool isKeyBorder = key / width == 0 || key % width == 0 ||
+            //                    key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            borderMap.erase(key);
             int n146x = x - 1; // < 0 ? 0 : x - 1;
             int n27x = x;
             int n358x = x + 1; // > 9 ? 9 : x + 1;
@@ -163,54 +198,82 @@ namespace tarikumutlu
             int n3 = n123y * width + n358x; // sag ust
             int n8 = n678y * width + n358x; // sag alt
             int n6 = n678y * width + n146x; // sol alt
-            // std::cout << " key: " << key << std::endl;
-            // std::cout << " value: " << borderMap[key] << std::endl;
-            if (borderMap.find(n4) != borderMap.end() && borderMap[n4] == 0 && n146x >= 0)
+            // bool n1IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n2IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n3IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n4IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n5IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n6IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n7IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            // bool n8IsBorder = key / width == 0 || key % width == 0 ||
+            //                     key % width == width-1 || key % (height*(width-1)<width) ? true:false;
+            if (borderMap.find(n4) != borderMap.end() && borderMap[n4] == 0 && n146x >= 0 /*&& ((isKeyBorder && !n4IsBorder) || (!isKeyBorder && !n4IsBorder))*/)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n146x, n45y, width,height, borderMap);
+                LookNeighbour(n146x, n45y, width, height, borderMap);
             }
             if (borderMap.find(n2) != borderMap.end() && borderMap[n2] == 0 && n123y >= 0)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n27x, n123y, width,height, borderMap);
+                LookNeighbour(n27x, n123y, width, height, borderMap);
             }
             if (borderMap.find(n1) != borderMap.end() && borderMap[n1] == 0 && n146x >= 0 && n123y >= 0)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n146x, n123y, width,height, borderMap);
+                LookNeighbour(n146x, n123y, width, height, borderMap);
             }
             if (borderMap.find(n7) != borderMap.end() && borderMap[n7] == 0 && n678y < height)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n27x, n678y, width,height, borderMap);
+                LookNeighbour(n27x, n678y, width, height, borderMap);
             }
             if (borderMap.find(n5) != borderMap.end() && borderMap[n5] == 0 && n358x < width)
             {
-                //std::cout << "var" << n5 << std::endl;
                 zoneLastBorder = false;
-                LookNeighbour(n358x, n45y, width,height, borderMap);
+                LookNeighbour(n358x, n45y, width, height, borderMap);
             }
             if (borderMap.find(n3) != borderMap.end() && borderMap[n3] == 0 && n358x < width && n123y >= 0)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n358x, n123y, width,height, borderMap);
+                LookNeighbour(n358x, n123y, width, height, borderMap);
             }
-            // std::cout << "key n5 var mi: " << (borderMap.find(n5) != borderMap.end()) << std::endl;
-            // std::cout << " valuesi: " << borderMap[n5] << std::endl;
             if (borderMap.find(n8) != borderMap.end() && borderMap[n8] == 0 && n678y < height && n358x < width)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n358x, n678y, width,height, borderMap);
+                LookNeighbour(n358x, n678y, width, height, borderMap);
             }
             if (borderMap.find(n6) != borderMap.end() && borderMap[n6] == 0 && n678y < height && n146x >= 0)
             {
                 zoneLastBorder = false;
-                LookNeighbour(n146x, n678y, width,height, borderMap);
+                LookNeighbour(n146x, n678y, width, height, borderMap);
             }
             if (zoneLastBorder)
                 m_zoneCount += 1;
         }
+    }
+
+    std::pair<int, int> ZoneCounterImpl::FindTopLeftBorder(std::unordered_map<int, int> &borderMap, int width)
+    {
+        int smallestKey = borderMap.begin()->first;
+        for (auto &i : borderMap)
+        {
+            if (i.first < smallestKey)
+                smallestKey = i.first;
+        }
+        auto pair = std::make_pair(smallestKey % width, smallestKey / width);
+        return pair;
+    }
+
+    ZoneCounterInterface *getZoneCounter()
+    {
+        return new ZoneCounterImpl();
     }
 
 }
