@@ -62,6 +62,7 @@ x,y index starts 1,1
 - Solve function calls LookNeighbor function witth a zonePoint
 - LookNeighbor searches all neighbor cells recursively until remain no neighbor zone points in the map.
 - ZoneCounter variable is increased after LookNeighbor returned true
+- These processes continue until zonePointMap is empty.
 
 ## Python GUI
 
@@ -77,7 +78,7 @@ Python GUI is developed for test purposes and also It provides map visuality, ma
 `python map_creator.py`
 
 
-## TEST Video
+## Test Video
 
 Open video/bites_vid.mp4
 
