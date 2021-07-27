@@ -80,7 +80,7 @@ Python GUI is developed for test purposes and also It provides map visuality, ma
 
 ## Test Video
 
-Open video/bites_vid.mp4
+Open video/test_vid.mp4
 
 ## Known Bugs
 --
